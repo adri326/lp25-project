@@ -95,13 +95,83 @@ Le comportement de l'application peut être paramétré suivant plusieurs option
  - L'option **-s** sans argument active le calcul des sommes MD5 des fichiers.
  - L'option **-i** suivie d'un argument spécifie le dossier à analyser.
 
+## Décomposition du programme
+
+Le programme sera séparé en plusieurs fichiers de code, chacun ayant un rôle précis.
+
+### main
+
+Le fichier `main.c` contiendra la fonction `main` qui aura deux rôles :
+
+ - Tester les options passées au programme pour son paramétrage, en utilisant getopt;
+ - Appeler les fonctions des autres fichiers pour scanner le répertoire cible, construire la structure en mémoire, et l'écrire dans le fichier de scan.
+
+### Scan
+
+Les fichiers `scan.h` et `scan.c` contiendront respectivement les signatures et les définitions des fonctions nécessaires au scan, notamment :
+
+```c
+s_directory *process_dir(char *path);
+s_file *process_file(char *path);
+```
+Ces fonctions traitent respectivement les dossiers (en lisant leur contenu) et les fichiers (en testant leur type et en calculant les informations nécessaires). Elles renvoient un pointeur vers une structure de dossier ou de fichier, NULL en cas de problème. Le pointeur renvoyé a pour but d'ajouter l'élément à la liste en mémoire. Il ne faut pas oublier de libérer tous ces pointeurs à la fin de l'exécution du programme. Ceci sera vérifié et participera à la note du projet.
+
+### Save
+
+Les fichiers `save.h` et `save.c` contiendront respectivement les signatures et les définitions des fonctions pour la sauvegarde de la structure en mémoire résultant du scan. _A minima_, on y trouvera :
+
+```c
+int save_to_file(s_directory *root, char *path_to_target);
+```
+Cette fonction écrira dans le fichier accessible par le chemin `path_to_target` l'ensemble des informations de la structure pointée par `root`. La fonction renvoie 0 en cas d'échec, -1 sinon. Il est fortement conseillé de créer des fonctions additionnelles pour traiter séparément l'écriture des différents types d'enregistrements.
+
+### Tree
+
+Les fichiers `tree.h` et `tree.c` contiendront les signatures et les définitions des fonctions pour manipuler l'arborescence sauvée en mémoire. Notamment, on y trouvera :
+
+```c
+int append_subdir(s_directory *child, s_directory *parent);
+int append_file(s_file *child, s_directory *parent);
+void clear_files(s_directory *parent);
+void clear_subdirs(s_directory *parent);
+```
+
+Les fonctions `append_subdir` et `append_file` vont respectivement ajouter un sous-répertoire ou un fichier pointés par `child` à la liste des sous répertoires ou des fichiers du noeud pointé par `parent`
+
+Les fonctions `clear_files` et `clear_subdirs` vont respectivement libérer la mémoire des listes des fichiers et des sous répertoires du noeud pointé par `parent`.
+
+Attention ! La fonction `clear_subdirs` doit d'abord libérer récursivement le contenu des sous-répertoires avant de pouvoir les libérer.
+
+### MD5
+
+Les fichiers `md5sum.h` et `md5sum.c` contiendront respectivement les signatures et les définitions des fonctions relatives au calcul de la somme MD5 d'un fichier, notamment la fonction suivante :
+
+```c
+int compute_md5(char *path, unsigned char buffer[]);
+```
+Cette fonction calcule la somme MD5 du fichier accessible par le chemin `path`, et en stocke la valeur dans le tableau de caractères non signés `buffer`.
+
+Vous pouvez utiliser d'autres fonctions appelées par celle-ci pour faciliter votre développement.
+
+## Méthode de travail
+
+Afin de limiter vos conflits de code (i.e. des modifications incompatibles sur des fichiers), il est conseillé que vous vous répartissiez les tâches sur des fonctionnalités différentes, en changeant périodiquement de rôle afin de permettre à chacun de s'approprier les notions et la technique relative à l'ensemble du projet.
+
+Il vous sera également nécessaire de planifier des synchronisations **au minimum toutes les deux semaines, de préférence chaque semaine**. Ces points d'avancement feront l'objet de compte rendus qui seront à inclure au rapport du projet.
+
 ## Bonus
 
 Quelques points de bonus sont réservés aux groupes dont la sauvegarde dans un fichier se fera, non plus en mode texte, mais dans une base de données SQLite. Vous pouvez consulter la [documentation de l'API SQLite pour C/C++](https://www.sqlite.org/cintro.html) pour plus d'informations.
 
 ## Rendu
 
-Le code du projet, sur git-info, avec un Makefile permettant la compilation du projet, et un README.md qui décrit les éventuelles bibliothèques à installer, ainsi que l'utilisation de l'application.
+Le document principal à remettre est le code du projet, sur git-info, accompagné du Makefile permettant sa compilation, et d'un README.md qui décrit les éventuelles bibliothèques à installer, ainsi que l'utilisation de l'application.
+
+Par ailleurs, un rapport succinct sera à remettre, en deux temps : à mi-projet (date à définir), les choix arrêtés par le groupe devront être définis et justifiés (choix ou non de l'intégration de SQLite, ajout de fonctions dans les différents modules du programme, etc.).
+
+Ce rapport sera ensuite enrichi du RETEX du projet une fois celui-ci terminé. Pour réaliser ce RETEX, vous prendrez à tour de rôle la direction de la rédaction d'un "compte rendu de mission", dans lequel vous interrogerez vos camarades de projet sur les points qui vous paraissent nécessiter une amélioration et/ou un éclaircissement, ainsi que sur la question suivante : _"En se basant sur le déroulement du projet, aujourd'hui que ferais-tu différemment ?"_. Les compte rendus de tous les membres du groupes devront ensuite être synthétisés en RETEX et ajoutés au rapport pour produire le document final à rendre en fin de semestre.
+
+Il vous sera probablement également demandé de présenter ce rapport et le projet dans un exposé oral, soit en face à face, soit en visioconférence.
 
 ## Annexes
 
