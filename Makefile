@@ -1,5 +1,5 @@
 BUILD_DIR = build
-SOURCES = src/main.c
+SOURCES = src/main.c src/md5sum.c src/save.c src/scan.c src/tree.c
 TARGET = projet
 
 BIN_DIR = $(BUILD_DIR)
@@ -17,7 +17,7 @@ build: $(BIN_DIR)/projet
 clean:
 	rm -rf $(BUILD_DIR)
 
-$(BIN_DIR)/projet: $(OBJ_DIR)/main.o
+$(BIN_DIR)/projet: $(OBJECTS)
 	@[ -d $(BIN_DIR) ] || mkdir -p $(BIN_DIR)
 	$(CC) $(LDFLAGS) -o $@ $^
 
