@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <openssl/md5.h>
 #include <stdio.h>
-#include "../src/md5sum.h"
+#include <md5sum.h>
 
 uint8_t* parse_md5sum(char* raw) {
     uint8_t* res = malloc(MD5_DIGEST_LENGTH);

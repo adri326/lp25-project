@@ -13,16 +13,17 @@ set(SOURCES
 )
 
 set(HEADERS
-    src/defs.h
-    src/md5sum.h
-    src/save.h
-    src/scan.h
-    src/tree.h
+    include/defs.h
+    include/md5sum.h
+    include/save.h
+    include/scan.h
+    include/tree.h
 )
 
 find_package(OpenSSL REQUIRED)
 
 add_executable(lp25-project src/main.c ${SOURCES} ${HEADERS})
+include_directories("${CMAKE_SOURCE_DIR}/include")
 target_link_libraries(lp25-project PUBLIC OpenSSL::Crypto)
 
 if(NO_TEST STREQUAL "true")

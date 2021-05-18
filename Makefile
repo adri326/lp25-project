@@ -1,30 +1,42 @@
-BUILD_DIR = build
-SOURCES = src/main.c src/md5sum.c src/save.c src/scan.c src/tree.c
-TARGET = projet
+SOURCE_DIRECTORY=src
+HEADER_DIRECTORY=include
 
-BIN_DIR = $(BUILD_DIR)
-OBJ_DIR = $(BUILD_DIR)/objects
-# http://www.gnu.org/software/make/manual/make.html#Substitution-Refs
-OBJECTS = $(SOURCES:src/%.c=$(OBJ_DIR)/%.o)
-LDFLAGS = -lm
+BUILD_DIRECTORY = build
+BIN_DIRECTORY = $(BUILD_DIRECTORY)/bin
+OBJECTS_DIRECTORY = $(BUILD_DIRECTORY)/objects
 
-# Base targets
+EXECUTABLE=projet
 
-.PHONY: build clean
+CC=gcc
+CFLAGS=-I./$(HEADER_DIRECTORY) -std=c11 -Wall -pedantic
+LDFLAGS=
+LIBS=-lm -lcrypto
 
-build: $(BIN_DIR)/projet
+#manually select the files
+#SOURCES=main.c polynom_fct.c
+
+#Or add the source files automatically
+SOURCES=$(notdir $(wildcard $(SOURCE_DIRECTORY)/*.c))
+SOURCES_IGNORE=
+
+#Filtering and creating the needed variables
+SOURCES := $(filter-out $(SOURCES_IGNORE),$(SOURCES)) #:= is an "expansion assignement" where everything is exapnded before assignement so the reference is broken (here it is to prevent infinite recursion)
+OBJECTS=$(SOURCES:%.c=$(OBJECTS_DIRECTORY)/%.o)
+
+.PHONY: clean clean-all
+
+all: $(BIN_DIRECTORY)/$(EXECUTABLE)
+
+$(BIN_DIRECTORY)/$(EXECUTABLE): $(OBJECTS)
+	[ -d $(BIN_DIRECTORY) ] || mkdir -p $(BIN_DIRECTORY)
+	$(CC) $(LDFLAGS) -o $(BIN_DIRECTORY)/$(EXECUTABLE) $^ $(LIBS)
+
+$(OBJECTS): $(OBJECTS_DIRECTORY)/%.o : $(SOURCE_DIRECTORY)/%.c #static pattern rule
+	[ -d $(OBJECTS_DIRECTORY) ] || mkdir -p $(OBJECTS_DIRECTORY)
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -rf $(BUILD_DIR)
+	rm -rf $(OBJECTS_DIRECTORY)
 
-$(BIN_DIR)/projet: $(OBJECTS)
-	@[ -d $(BIN_DIR) ] || mkdir -p $(BIN_DIR)
-	$(CC) $(LDFLAGS) -o $@ $^
-
-# '%' (the stem) here refers to the .c's extensionless basename
-$(OBJECTS): $(OBJ_DIR)/%.o: src/%.c
-	@# Create the output directory if it is not present
-	@[ -d $(OBJ_DIR) ] || mkdir -p $(OBJ_DIR)
-
-	@# Build the files
-	$(CC) $(CFLAGS) -c -o $@ $<
+clean-all: clean
+	rm -rf $(BIN_DIRECTORY)

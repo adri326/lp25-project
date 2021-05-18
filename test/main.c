@@ -1,5 +1,5 @@
 #include <check.h>
-#include "../src/defs.h"
+#include <defs.h>
 #include "md5sum.c"
 
 int main(int argc, char* argv[]) {
