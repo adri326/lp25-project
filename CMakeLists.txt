@@ -22,6 +22,7 @@ set(HEADERS
 
 find_package(OpenSSL REQUIRED)
 
+add_compile_definitions("OPENSSL_MD5")
 add_executable(lp25-project src/main.c ${SOURCES} ${HEADERS})
 include_directories("${CMAKE_SOURCE_DIR}/include")
 target_link_libraries(lp25-project PUBLIC OpenSSL::Crypto)

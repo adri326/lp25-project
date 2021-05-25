@@ -10,7 +10,15 @@ EXECUTABLE=projet
 CC=gcc
 CFLAGS=-I./$(HEADER_DIRECTORY) -std=c11 -Wall -pedantic
 LDFLAGS=
-LIBS=-lm -lcrypto
+LIBS=-lm
+
+ifdef OPENSSL_MD5
+CFLAGS += -DOPENSSL_MD5
+LIBS += -lcrypto
+else
+CFLAGS += -DBSD_MD5
+LIBS += -lbsd
+endif
 
 #manually select the files
 #SOURCES=main.c polynom_fct.c
