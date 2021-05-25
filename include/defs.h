@@ -34,4 +34,12 @@ struct directory {
 
 typedef struct directory directory_t;
 
+/**
+    Sets `ll` to the last element of the linked list.
+    `ll` must initially be set to one of the lements of the linked list.
+    If `ll` is NULL, it is left untouched.
+    Assumes that (ll, next) is a non-cyclic linked list, where ll->next is a reference to the next element of the linked list.
+**/
+#define LL_TAIL(ll, next) if (ll) while ((ll)->next) ll = (ll)->next;
+
 #endif // DEFS_H
