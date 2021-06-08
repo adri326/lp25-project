@@ -1,5 +1,7 @@
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include <save.h>
 #include <defs.h>
@@ -19,7 +21,6 @@ int save_to_file(directory_t *root, char *path_to_target, int depth, char *path_
 	//open file
 	FILE *f = fopen(path_to_target, "a");
 	if (!f){return 0;}
-
 
 	//write the current directory informations
 	char buffer[200];
@@ -66,16 +67,17 @@ int save_to_file(directory_t *root, char *path_to_target, int depth, char *path_
 
 int construct_file_line(char *buffer, file_t file, char *path_to_parent_dir){
 
-	char str_time[20];
-	strftime(str_time, 20, "%Y-%m-%d %H:%M:%S", file.mod_time);
+	char lil_buf[20];
 
-	strcpy(buffer, atoi(file.file_type)); //e_type
+	strcpy(buffer, "1"); //e_type
 	strcat(buffer, "\t");
 
-	strcat(buffer, str_time); //time_t
+	strftime(lil_buf, 20, "%Y-%m-%d %H:%M:%S", localtime(&file.mod_time));
+	strcat(buffer, lil_buf); //time_t
 	strcat(buffer, "\t");
 
-	strcat(buffer, atoi(file.file_size)); //size
+	sprintf(lil_buf, "%lu", file.file_size); 
+	strcat(buffer, lil_buf); //size
 	strcat(buffer, "\t");
 
 	strcat(buffer, path_to_parent_dir); //begining of path
@@ -87,13 +89,13 @@ int construct_file_line(char *buffer, file_t file, char *path_to_parent_dir){
 
 int construct_dir_line(char *buffer, directory_t dir, char *path_to_parent_dir){
 
-	char str_time[20];
-	strftime(str_time, 20, "%Y-%m-%d %H:%M:%S", dir.mod_time);
+	char lil_buf[20];
 
 	strcpy(buffer, "0"); //e_type
 	strcat(buffer, "\t");
 
-	strcat(buffer, str_time); //time_t
+	strftime(lil_buf, 20, "%Y-%m-%d %H:%M:%S", localtime(&dir.mod_time));
+	strcat(buffer, lil_buf); //time_t
 	strcat(buffer, "\t");
 
 	strcat(buffer, path_to_parent_dir); //begining of path
@@ -105,13 +107,13 @@ int construct_dir_line(char *buffer, directory_t dir, char *path_to_parent_dir){
 
 int construct_other_line(char *buffer, file_t file, char *path_to_parent_dir){
 
-	char str_time[20];
-	strftime(str_time, 20, "%Y-%m-%d %H:%M:%S", file.mod_time);
+	char lil_buf[20];
 
-	strcpy(buffer, atoi(file.file_type)); //e_type
+	strcpy(buffer, "2"); //e_type
 	strcat(buffer, "\t");
 
-	strcat(buffer, str_time); //time_t
+	strftime(lil_buf, 20, "%Y-%m-%d %H:%M:%S", localtime(&file.mod_time));
+	strcat(buffer, lil_buf); //time_t
 	strcat(buffer, "\t");
 
 	strcat(buffer, path_to_parent_dir); //begining of path
