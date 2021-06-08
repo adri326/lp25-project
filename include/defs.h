@@ -3,8 +3,16 @@
 
 #include <linux/limits.h>
 #include <time.h>
-#include <openssl/md5.h>
 #include <inttypes.h>
+#ifdef OPENSSL_MD5
+    #include <openssl/md5.h>
+#else
+    #ifdef BSD_MD5
+        #include <bsd/md5.h>
+    #else
+        #error No MD5 library to use!
+    #endif
+#endif
 
 enum ftype {
     DIRECTORY,
