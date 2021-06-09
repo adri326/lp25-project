@@ -9,7 +9,14 @@
 
 int save_to_file(directory_t *root, char *path_to_target, int depth, char *path_to_current_dir) {
 
+	//empties the target file if we are at depth 0
+	if (depth == 0) {
+		FILE *w = fopen(path_to_target, "w");
+		fclose(w);
+	}
+
 	//Put the right number of tabulations in a string
+	
 	char tabulations[depth+2];
 	tabulations[0] = '\0';
 	int i;
@@ -23,10 +30,11 @@ int save_to_file(directory_t *root, char *path_to_target, int depth, char *path_
 	if (!f){return 0;}
 
 	//write the current directory informations
-	char buffer[200];
+	char buffer[200] = {0};
 	fputs(tabulations, f);
 	construct_dir_line(buffer, *root, path_to_current_dir);
 	fputs(buffer, f);
+	fputs("\n", f);
 	tabulations[i] = '\t';
 	tabulations[i+1] = '\0';
 
@@ -41,22 +49,25 @@ int save_to_file(directory_t *root, char *path_to_target, int depth, char *path_
 		}
 		fputs(tabulations, f);
 		fputs(buffer, f);
+		fputs("\n", f);
 		current_file = current_file->next_file;
 	}
 
+	fclose(f);
+
 	//writes directories
 	directory_t *current_dir = root->subdirs;
-	char next_dir_path[200];
+	char next_dir_path[200] = {0};
 	while (current_dir != NULL) {
 		//call to recurence
 		strcpy(next_dir_path, path_to_current_dir);
 		strcat(next_dir_path, "/");
 		strcat(next_dir_path, current_dir->name);
-		save_to_file(current_dir, path_to_target, depth+1, next_dir_path);
+		//save_to_file(current_dir, path_to_target, depth+1, next_dir_path);
 		current_dir = current_dir->next_dir;
-		}
+	}
 
-
+	
     return 0;
 }
 
@@ -67,12 +78,12 @@ int save_to_file(directory_t *root, char *path_to_target, int depth, char *path_
 
 int construct_file_line(char *buffer, file_t file, char *path_to_parent_dir){
 
-	char lil_buf[20];
+	char lil_buf[200] = {0};
 
 	strcpy(buffer, "1"); //e_type
 	strcat(buffer, "\t");
 
-	strftime(lil_buf, 20, "%Y-%m-%d %H:%M:%S", localtime(&file.mod_time));
+	strftime(lil_buf, 200, "%Y-%m-%d %H:%M:%S", localtime(&file.mod_time));
 	strcat(buffer, lil_buf); //time_t
 	strcat(buffer, "\t");
 
@@ -89,12 +100,12 @@ int construct_file_line(char *buffer, file_t file, char *path_to_parent_dir){
 
 int construct_dir_line(char *buffer, directory_t dir, char *path_to_parent_dir){
 
-	char lil_buf[20];
+	char lil_buf[200] = {0};
 
 	strcpy(buffer, "0"); //e_type
 	strcat(buffer, "\t");
 
-	strftime(lil_buf, 20, "%Y-%m-%d %H:%M:%S", localtime(&dir.mod_time));
+	strftime(lil_buf, 200, "%Y-%m-%d %H:%M:%S", localtime(&dir.mod_time));
 	strcat(buffer, lil_buf); //time_t
 	strcat(buffer, "\t");
 
@@ -107,12 +118,12 @@ int construct_dir_line(char *buffer, directory_t dir, char *path_to_parent_dir){
 
 int construct_other_line(char *buffer, file_t file, char *path_to_parent_dir){
 
-	char lil_buf[20];
+	char lil_buf[200] = {0};
 
 	strcpy(buffer, "2"); //e_type
 	strcat(buffer, "\t");
 
-	strftime(lil_buf, 20, "%Y-%m-%d %H:%M:%S", localtime(&file.mod_time));
+	strftime(lil_buf, 200, "%Y-%m-%d %H:%M:%S", localtime(&file.mod_time));
 	strcat(buffer, lil_buf); //time_t
 	strcat(buffer, "\t");
 
