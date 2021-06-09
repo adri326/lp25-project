@@ -41,7 +41,7 @@ int save_to_file(directory_t *root, char *path_to_target, int depth, char *path_
     //writes files
     file_t *current_file = root->files;
     while (current_file != NULL) {
-        if (current_file->file_type == 1) {
+        if (current_file->file_type == REGULAR_FILE) {
             construct_file_line(buffer, *current_file, path_to_current_dir);
         }
         else {
@@ -88,7 +88,12 @@ int construct_file_line(char *buffer, file_t file, char *path_to_parent_dir){
     sprintf(lil_buf, "%lu\t", file.file_size);
     strcat(buffer, lil_buf); //size
 
-    sprintf(lil_buf, "%s\t", file.md5sum);
+    for (size_t n = 0; n < MD5_DIGEST_LENGTH; n++) {
+        sprintf(lil_buf, "%02hhx", file.md5sum[n]);
+        strcat(buffer, lil_buf);
+    }
+
+    sprintf(lil_buf, "\t");
     strcat(buffer, lil_buf); //md5sum
 
     strcat(buffer, path_to_parent_dir); //benigging of path

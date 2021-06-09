@@ -60,22 +60,25 @@ START_TEST(test_save_subdirs) {
     file_t file1 = {0};
     strcpy(file1.name, "file1");
     file1.mod_time = 10;
-    file1.md5sum[0] = 16; // Expected is 01000000...
+    file1.file_type = OTHER_TYPE;
 
     dir1.files = &file1;
 
     file_t file2 = {0};
     strcpy(file2.name, "file2");
     file2.mod_time = 11;
+    file2.file_size = 32;
+    file2.file_type = REGULAR_FILE;
     file2.md5sum[0] = 5;
-    file2.md5sum[1] = 19; // Expected is 5031000000...
+    file2.md5sum[1] = 19; // Expected is 0513000000...
 
-    file2.next_file = &file2;
+    file1.next_file = &file2;
 
     file_t file3 = {0};
     strcpy(file3.name, "file3");
     file3.mod_time = 20;
-    file3.md5sum[0] = 15; // Expected is A000000...
+    file3.file_type = REGULAR_FILE;
+    file3.md5sum[0] = 10; // Expected is 0a00000...
 
     subdir1.files = &file3;
 
