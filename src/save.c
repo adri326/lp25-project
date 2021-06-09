@@ -80,16 +80,16 @@ int construct_file_line(char *buffer, file_t file, char *path_to_parent_dir){
 
 	char lil_buf[200] = {0};
 
-	strcpy(buffer, "1"); //e_type
-	strcat(buffer, "\t");
+	strcpy(buffer, "1\t"); //e_type
 
-	strftime(lil_buf, 200, "%Y-%m-%d %H:%M:%S", localtime(&file.mod_time));
+	strftime(lil_buf, 200, "%Y-%m-%d %H:%M:%S\t", localtime(&file.mod_time));
 	strcat(buffer, lil_buf); //time_t
-	strcat(buffer, "\t");
 
-	sprintf(lil_buf, "%lu", file.file_size); 
+	sprintf(lil_buf, "%lu\t", file.file_size); 
 	strcat(buffer, lil_buf); //size
-	strcat(buffer, "\t");
+	
+	sprintf(lil_buf, "%s\t", file.md5sum);
+	strcat(buffer, lil_buf); //md5sum
 
 	strcat(buffer, path_to_parent_dir); //begining of path
 	strcat(buffer, file.name);
@@ -102,12 +102,10 @@ int construct_dir_line(char *buffer, directory_t dir, char *path_to_parent_dir){
 
 	char lil_buf[200] = {0};
 
-	strcpy(buffer, "0"); //e_type
-	strcat(buffer, "\t");
+	strcpy(buffer, "0\t"); //e_type
 
-	strftime(lil_buf, 200, "%Y-%m-%d %H:%M:%S", localtime(&dir.mod_time));
+	strftime(lil_buf, 200, "%Y-%m-%d %H:%M:%S\t", localtime(&dir.mod_time));
 	strcat(buffer, lil_buf); //time_t
-	strcat(buffer, "\t");
 
 	strcat(buffer, path_to_parent_dir); //begining of path
 	strcat(buffer, dir.name);
@@ -120,12 +118,10 @@ int construct_other_line(char *buffer, file_t file, char *path_to_parent_dir){
 
 	char lil_buf[200] = {0};
 
-	strcpy(buffer, "2"); //e_type
-	strcat(buffer, "\t");
+	strcpy(buffer, "2\t"); //e_type
 
-	strftime(lil_buf, 200, "%Y-%m-%d %H:%M:%S", localtime(&file.mod_time));
+	strftime(lil_buf, 200, "%Y-%m-%d %H:%M:%S\t", localtime(&file.mod_time));
 	strcat(buffer, lil_buf); //time_t
-	strcat(buffer, "\t");
 
 	strcat(buffer, path_to_parent_dir); //begining of path
 	strcat(buffer, file.name);
