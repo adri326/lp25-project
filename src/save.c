@@ -63,7 +63,7 @@ int save_to_file(directory_t *root, char *path_to_target, int depth, char *path_
         strcpy(next_dir_path, path_to_current_dir);
         strcat(next_dir_path, "/");
         strcat(next_dir_path, current_dir->name);
-        //save_to_file(current_dir, path_to_target, depth+1, next_dir_path);
+        save_to_file(current_dir, path_to_target, depth+1, next_dir_path);
         current_dir = current_dir->next_dir;
     }
 
@@ -91,9 +91,9 @@ int construct_file_line(char *buffer, file_t file, char *path_to_parent_dir){
     strcat(buffer, lil_buf); //size
     strcat(buffer, "\t");
 
-    strcat(buffer, path_to_parent_dir); //begining of path
-    strcat(buffer, file.name);
+    strcat(buffer, path_to_parent_dir); //benigging of path
     strcat(buffer, "/");
+    strcat(buffer, file.name);
 
     return 0;
 }
@@ -110,6 +110,7 @@ int construct_dir_line(char *buffer, directory_t dir, char *path_to_parent_dir){
     strcat(buffer, "\t");
 
     strcat(buffer, path_to_parent_dir); //begining of path
+    strcat(buffer, "/");
     strcat(buffer, dir.name);
     strcat(buffer, "/");
 
@@ -128,8 +129,8 @@ int construct_other_line(char *buffer, file_t file, char *path_to_parent_dir){
     strcat(buffer, "\t");
 
     strcat(buffer, path_to_parent_dir); //begining of path
-    strcat(buffer, file.name);
     strcat(buffer, "/");
+    strcat(buffer, file.name);
 
     return 0;
 }
