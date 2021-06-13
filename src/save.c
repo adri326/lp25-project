@@ -29,22 +29,20 @@ bool save_to_file(directory_t* root, const char* path_to_target, const char* cur
 
 bool save_to_file_recursive(FILE* output, directory_t* current_dir, int depth, const char* current_path, bool verbose) {
     //Put the right number of tabulations in a string (VLA!)
-    char tabulations[depth+2];
-    int i;
-    for (i=0; i<depth; i++) {
+    char tabulations[depth + 2];
+    int i = 0;
+    for (; i < depth; i++) {
         tabulations[i] = '\t';
     }
     tabulations[i] = '\0';
 
     //write the current directory informations
-    // char buffer[200] = {0};
     fputs(tabulations, output);
     construct_dir_line(output, *current_dir, current_path);
-    // fputs(buffer, output);
     fputs("\n", output);
 
     if (verbose) {
-        printf("D %s%s\n", tabulations, current_dir->name);
+        printf("D %s%s/%s/\n", tabulations, current_path, current_dir->name);
     }
 
     tabulations[i] = '\t';
@@ -57,18 +55,15 @@ bool save_to_file_recursive(FILE* output, directory_t* current_dir, int depth, c
         if (current_file->file_type == REGULAR_FILE) {
             construct_file_line(output, *current_file, current_path);
             if (verbose) {
-                printf("F %s%s\n", tabulations, current_file->name);
+                printf("F %s%s/%s\n", tabulations, current_path, current_file->name);
             }
         } else {
             construct_other_line(output, *current_file, current_path);
             if (verbose) {
-                printf("O %s%s\n", tabulations, current_file->name);
+                printf("O %s%s/%s\n", tabulations, current_path, current_file->name);
             }
         }
-        // fputs(buffer, output);
         fputs("\n", output);
-
-
 
         current_file = current_file->next_file;
     }
@@ -81,11 +76,13 @@ bool save_to_file_recursive(FILE* output, directory_t* current_dir, int depth, c
         strcpy(new_path, current_path);
         strcat(new_path, "/");
         strcat(new_path, subdir->name);
-        save_to_file_recursive(output, subdir, depth+1, new_path, verbose);
+        if (!save_to_file_recursive(output, subdir, depth+1, new_path, verbose)) {
+            return false;
+        }
         subdir = subdir->next_dir;
     }
 
-    return 0;
+    return true;
 }
 
 bool construct_file_line(FILE* output, file_t file, const char* path_to_parent_dir){
@@ -118,7 +115,7 @@ bool construct_dir_line(FILE* output, directory_t dir, const char* path_to_paren
     strftime(lil_buf, 200, "%Y-%m-%d %H:%M:%S\t", localtime(&dir.mod_time));
     fputs(lil_buf, output); //time_t
 
-    fprintf(output, "%s/%s/", path_to_parent_dir, dir.name); // path
+    fprintf(output, "%s/", path_to_parent_dir); // path
 
     return true;
 }

@@ -2,8 +2,9 @@
 #include <check.h>
 #include <defs.h>
 #include <save.h>
+#include <scan.h>
 
-START_TEST(test_save_subdirs) {
+START_TEST(test_save_artificial) {
     directory_t dir1 = {0};
     strcpy(dir1.name, "dir1");
     dir1.mod_time = 100;
@@ -52,14 +53,28 @@ START_TEST(test_save_subdirs) {
 }
 END_TEST
 
+START_TEST(test_save_scanned) {
+    directory_t* dir = scan_dir(TEST_DIR "/data/simple", true, false);
+    ck_assert(save_to_file(dir, TEST_DIR "/out/save_simple.txt", "data/simple", false));
+    free(dir);
+
+    dir = scan_dir(TEST_DIR "/data/subdir", true, false);
+    ck_assert(save_to_file(dir, TEST_DIR "/out/save_subdir.txt", "data/subdir", false));
+    free(dir);
+
+    dir = scan_dir(TEST_DIR "/data", true, false);
+    ck_assert(save_to_file(dir, TEST_DIR "/out/save_data.txt", "data", false));
+    free(dir);
+}
+END_TEST
 
 Suite* save_suite() {
     Suite* res = suite_create("save");
 
     TCase* tc_basic = tcase_create("basic");
 
-    tcase_add_test(tc_basic, test_save_subdirs);
-
+    tcase_add_test(tc_basic, test_save_artificial);
+    tcase_add_test(tc_basic, test_save_scanned);
 
     suite_add_tcase(res, tc_basic);
 
