@@ -74,12 +74,40 @@ START_TEST(test_scan_subdir_simple) {
     ck_assert(c->file_type == REGULAR_FILE);
 }
 
+START_TEST(test_scan_dir_nomd5) {
+    directory_t* dir = scan_dir(TEST_DIR "/data/simple", false, false);
+
+    ck_assert(dir != NULL);
+
+    // Directory "simple"
+    ck_assert_str_eq(dir->name, "simple");
+    ck_assert(dir->files != NULL);
+    ck_assert(dir->next_dir == NULL);
+    ck_assert(dir->subdirs == NULL);
+
+    // File "hello.txt"
+    file_t* hello = dir->files;
+    ck_assert_str_eq(hello->name, "hello.txt");
+    ck_assert_uint_eq(hello->file_size, 7);
+
+    uint8_t* md5_expected = parse_md5sum("00000000000000000000000000000000");
+    ck_assert_msg(buffer_compare(hello->md5sum, md5_expected), "hello.txt yielded a different sum!");
+    free(md5_expected);
+
+    ck_assert(hello->next_file == NULL);
+    ck_assert(hello->file_type == REGULAR_FILE);
+
+    free_dir(dir);
+}
+END_TEST
+
 Suite* scan_suite() {
     Suite* res = suite_create("scan");
 
     TCase* tc_basic = tcase_create("basic");
 
     tcase_add_test(tc_basic, test_scan_dir_simple);
+    tcase_add_test(tc_basic, test_scan_dir_nomd5);
     tcase_add_test(tc_basic, test_scan_subdir_simple);
 
     suite_add_tcase(res, tc_basic);

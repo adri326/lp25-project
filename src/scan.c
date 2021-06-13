@@ -86,11 +86,15 @@ file_t* process_file(char* path, bool md5sum) {
         files->file_type = REGULAR_FILE;
         if (md5sum) {
             compute_md5(path, files->md5sum);
+        } else {
+            memset(files->md5sum, 0, MD5_DIGEST_LENGTH);
         }
     } else {
         files->file_type = OTHER_TYPE;
         if (md5sum) {
             compute_md5(path, files->md5sum);
+        } else {
+            memset(files->md5sum, 0, MD5_DIGEST_LENGTH);
         }
     }
 
