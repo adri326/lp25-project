@@ -52,12 +52,13 @@ directory_t* process_dir(char* path, bool md5sum, bool verbose) {
             strcat(str_buffer, file->d_name);
             if (verbose) {printf("%s\n", str_buffer);}
 
-            append_file(process_file(str_buffer, md5sum), root);
-
             if ((int)file->d_type == 4) {
                 directory_t* newDir = process_dir(str_buffer, md5sum, verbose);
                 append_subdir(newDir, root);
+            } else {
+                append_file(process_file(str_buffer, md5sum), root);
             }
+
             free(str_buffer);
         }
         file = readdir(dir);
