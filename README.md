@@ -2,7 +2,7 @@
 
 ## 1. Les bibliothèques à installer
 
-La bibliothèque md5 d'OPENSSL est nécessaire, sinon il faut celle de BSD est nécessaire.
+La bibliothèque md5 d'OPENSSL est nécessaire, sinon il faut celle de BSD.
 La bibliothèque devra être indiqué lors de l'utilisation du make : soit "make build OPENSSL_MD5=1" ou "make build BSD_MD5=1".
 
 ## 2. Utilisation de l'application
