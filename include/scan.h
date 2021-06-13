@@ -6,7 +6,7 @@
 #include <defs.h>
 
 
-directory_t *process_dir(char *path, bool md5sum);
+directory_t *process_dir(char *path, bool md5sum, bool verbose);
 file_t *process_file(char *path, bool md5sum);
 
 

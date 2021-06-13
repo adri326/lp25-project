@@ -14,7 +14,7 @@
 
 
 
-directory_t *process_dir(char *path, bool md5sum) {
+directory_t *process_dir(char *path, bool md5sum, bool verbose) {
     directory_t* root = (directory_t*)malloc(sizeof(directory_t));
     root->files = NULL;
     root->subdirs = NULL;
@@ -41,6 +41,7 @@ directory_t *process_dir(char *path, bool md5sum) {
     }
 
     //files and sub dirs
+    if (verbose) {printf("%s\n", path);}
     file = readdir(dir);
     while (file != NULL) {
         //file_t* f = NULL;
@@ -48,16 +49,17 @@ directory_t *process_dir(char *path, bool md5sum) {
             strcpy(str_buffer, path);
             strcat(str_buffer, "/");
             strcat(str_buffer, file->d_name);
+            if (verbose) {printf("%s\n", str_buffer);}
             
             append_file(process_file(str_buffer, md5sum), root);
 
             if ((int)file->d_type == 4) {
-                directory_t* newDir = process_dir(str_buffer, md5sum);
+                directory_t* newDir = process_dir(str_buffer, md5sum, verbose);
                 append_subdir(newDir,root);
             }
             
         }
-
+        file = readdir(dir);
     }
 
     if (dir) {

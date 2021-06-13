@@ -2,12 +2,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <stdbool.h>
 
 #include <save.h>
 #include <defs.h>
 
 
-int save_to_file(directory_t *root, char *path_to_target, int depth, char *path_to_current_dir) {
+int save_to_file(directory_t *root, char *path_to_target, int depth, char *path_to_current_dir, bool verbose) {
 
     //empties the target file if we are at depth 0
     if (depth == 0) {
@@ -63,7 +64,7 @@ int save_to_file(directory_t *root, char *path_to_target, int depth, char *path_
         strcpy(next_dir_path, path_to_current_dir);
         strcat(next_dir_path, "/");
         strcat(next_dir_path, current_dir->name);
-        save_to_file(current_dir, path_to_target, depth+1, next_dir_path);
+        save_to_file(current_dir, path_to_target, depth+1, next_dir_path, verbose);
         current_dir = current_dir->next_dir;
     }
 
