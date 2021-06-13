@@ -7,13 +7,13 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <stdbool.h>
-
+#include <assert.h>
 #include <defs.h>
 #include <tree.h>
 #include <md5sum.h>
 
 
-directory_t *process_dir(char *path, bool md5sum, bool verbose) {
+directory_t* process_dir(char* path, bool md5sum, bool verbose) {
     directory_t* root = (directory_t*)malloc(sizeof(directory_t));
     root->files = NULL;
     root->subdirs = NULL;
@@ -26,25 +26,27 @@ directory_t *process_dir(char *path, bool md5sum, bool verbose) {
     root->mod_time = stat_buffer.st_mtime;
 
     //name
-    char str_buffer[200];
-    last_of_split(path, '/', str_buffer);
-    strcpy(root->name, str_buffer);
+    const char* base = get_basename(path, '/');
+    strcpy(root->name, base);
 
     struct dirent* file = NULL;
     DIR* dir = opendir(path);
-    if(!dir)
+    if (!dir)
     {
-        perror("ERROR");
-        printf("Banana!\n");
+        perror("ERROR while opening directory");
+        fprintf(stderr, "Couldn't open directory '%s'\n", path);
         return NULL;
     }
 
     //files and sub dirs
-    if (verbose) {printf("%s\n", path);}
+    if (verbose) {
+        printf("%s\n", path);
+    }
     file = readdir(dir);
     while (file != NULL) {
         //file_t* f = NULL;
         if (file->d_name[0] != '.') {
+            char* str_buffer = (char*)malloc(strlen(path) + strlen(file->d_name) + 2);
             strcpy(str_buffer, path);
             strcat(str_buffer, "/");
             strcat(str_buffer, file->d_name);
@@ -54,8 +56,9 @@ directory_t *process_dir(char *path, bool md5sum, bool verbose) {
 
             if ((int)file->d_type == 4) {
                 directory_t* newDir = process_dir(str_buffer, md5sum, verbose);
-                append_subdir(newDir,root);
+                append_subdir(newDir, root);
             }
+            free(str_buffer);
         }
         file = readdir(dir);
     }
@@ -66,13 +69,12 @@ directory_t *process_dir(char *path, bool md5sum, bool verbose) {
     return root;
 }
 
-file_t *process_file(char *path, bool md5sum) {
+file_t* process_file(char* path, bool md5sum) {
     file_t* files = (file_t*)malloc(sizeof(file_t));
     files->next_file = NULL;
 
-    char str_buffer[200];
-    last_of_split(path, '/', str_buffer);
-    strcpy(files->name, str_buffer);
+    const char* base = get_basename(path, '/');
+    strcpy(files->name, base);
 
     struct stat stat_buffer;
     stat(path, &stat_buffer);
@@ -97,22 +99,17 @@ file_t *process_file(char *path, bool md5sum) {
     return files;
 }
 
-int last_of_split(char *inpt, char split_character, char *outpt) {
-    int length = strlen(inpt);
+const char* get_basename(const char* input, char separator) {
+    assert(separator != 0);
+    int length = strlen(input);
     int i = length-1;
-    while (i >= 0 && inpt[i] != split_character) {
+
+    while (i >= 0) {
+        if (input[i] == separator) {
+            return &input[i + 1];
+        }
         i--;
     }
 
-    outpt[0] = '\0';
-    int head = 0;
-    i++;
-    while (i < length) {
-        outpt[head] = inpt[i];
-        i++;
-        head++;
-    }
-    outpt[head] = '\0';
-
-    return 0;
+    return NULL;
 }
