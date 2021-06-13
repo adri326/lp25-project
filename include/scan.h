@@ -6,8 +6,8 @@
 #include <defs.h>
 
 
-directory_t *process_dir(char *path);
-file_t *process_file(char *path);
+directory_t *process_dir(char *path, bool md5sum);
+file_t *process_file(char *path, bool md5sum);
 
 
 //returns the last string in the splited input

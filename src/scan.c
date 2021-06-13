@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <stdbool.h>
 
 #include <defs.h>
 #include <tree.h>
@@ -13,13 +14,13 @@
 
 
 
-directory_t *process_dir(char *path) {
+directory_t *process_dir(char *path, bool md5sum) {
     directory_t* root = (directory_t*)malloc(sizeof(directory_t));
     root->files = NULL;
     root->subdirs = NULL;
     root->next_dir = NULL;
   
-    struct stat stat_buffer;// = malloc(sizeof(struct stat));
+    struct stat stat_buffer;
     stat(path, &stat_buffer);
   
     //mod_time
@@ -48,10 +49,10 @@ directory_t *process_dir(char *path) {
             strcat(str_buffer, "/");
             strcat(str_buffer, file->d_name);
             
-            append_file(process_file(str_buffer), root);
+            append_file(process_file(str_buffer, md5sum), root);
 
             if ((int)file->d_type == 4) {
-                directory_t* newDir = process_dir(str_buffer);
+                directory_t* newDir = process_dir(str_buffer, md5sum);
                 append_subdir(newDir,root);
             }
             
@@ -70,7 +71,7 @@ directory_t *process_dir(char *path) {
 
 
 
-file_t *process_file(char *path) {
+file_t *process_file(char *path, bool md5sum) {
     file_t* files = (file_t*)malloc(sizeof(file_t));
     files->next_file = NULL;
 
@@ -86,11 +87,15 @@ file_t *process_file(char *path) {
     }
     else if (S_ISREG(stat_buffer.st_mode)) {
         files->file_type = REGULAR_FILE;
-        compute_md5(path, files->md5sum);
+        if (md5sum) {
+            compute_md5(path, files->md5sum);
+        }
     }
     else {
         files->file_type = OTHER_TYPE;
-        compute_md5(path, files->md5sum);
+        if (md5sum) {
+            compute_md5(path, files->md5sum);
+        }
     }
 
 
