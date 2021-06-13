@@ -14,6 +14,7 @@ int save_to_file(directory_t *root, char *path_to_target, int depth, char *path_
     if (depth == 0) {
         FILE *w = fopen(path_to_target, "w");
         fclose(w);
+        if (verbose) {printf("Start of saving :\n");}
     }
 
     //Put the right number of tabulations in a string
@@ -36,6 +37,9 @@ int save_to_file(directory_t *root, char *path_to_target, int depth, char *path_
     construct_dir_line(buffer, *root, path_to_current_dir);
     fputs(buffer, f);
     fputs("\n", f);
+    
+    if (verbose) {printf("%s%s\n", tabulations, buffer);}
+    
     tabulations[i] = '\t';
     tabulations[i+1] = '\0';
 
@@ -51,6 +55,9 @@ int save_to_file(directory_t *root, char *path_to_target, int depth, char *path_
         fputs(tabulations, f);
         fputs(buffer, f);
         fputs("\n", f);
+        
+        if (verbose) {printf("%s%s\n", tabulations, buffer);}
+        
         current_file = current_file->next_file;
     }
 
