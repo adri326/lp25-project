@@ -8,7 +8,7 @@
 #include <defs.h>
 
 // TODO: remove root from this
-bool save_to_file(directory_t* root, const char* path_to_target, int depth, const char* current_path, bool verbose) {
+bool save_to_file(directory_t* root, const char* path_to_target, const char* current_path, bool verbose) {
     FILE *output = fopen(path_to_target, "w");
     if (!output) {
         perror("ERROR: Couldn't open target file");
@@ -20,7 +20,7 @@ bool save_to_file(directory_t* root, const char* path_to_target, int depth, cons
         printf("Start of saving :\n");
     }
 
-    bool res = save_to_file_recursive(output, root, depth, current_path, verbose);
+    bool res = save_to_file_recursive(output, root, 0, current_path, verbose);
 
     fclose(output);
 
@@ -37,14 +37,14 @@ bool save_to_file_recursive(FILE* output, directory_t* current_dir, int depth, c
     tabulations[i] = '\0';
 
     //write the current directory informations
-    char buffer[200] = {0};
+    // char buffer[200] = {0};
     fputs(tabulations, output);
-    construct_dir_line(buffer, *current_dir, current_path);
-    fputs(buffer, output);
+    construct_dir_line(output, *current_dir, current_path);
+    // fputs(buffer, output);
     fputs("\n", output);
 
     if (verbose) {
-        printf("%s%s\n", tabulations, buffer);
+        printf("D %s%s\n", tabulations, current_dir->name);
     }
 
     tabulations[i] = '\t';
@@ -53,16 +53,22 @@ bool save_to_file_recursive(FILE* output, directory_t* current_dir, int depth, c
     //writes files
     file_t *current_file = current_dir->files;
     while (current_file != NULL) {
-        if (current_file->file_type == REGULAR_FILE) {
-            construct_file_line(buffer, *current_file, current_path);
-        } else {
-            construct_other_line(buffer, *current_file, current_path);
-        }
         fputs(tabulations, output);
-        fputs(buffer, output);
+        if (current_file->file_type == REGULAR_FILE) {
+            construct_file_line(output, *current_file, current_path);
+            if (verbose) {
+                printf("F %s%s\n", tabulations, current_file->name);
+            }
+        } else {
+            construct_other_line(output, *current_file, current_path);
+            if (verbose) {
+                printf("O %s%s\n", tabulations, current_file->name);
+            }
+        }
+        // fputs(buffer, output);
         fputs("\n", output);
 
-        if (verbose) {printf("%s%s\n", tabulations, buffer);}
+
 
         current_file = current_file->next_file;
     }
@@ -82,59 +88,50 @@ bool save_to_file_recursive(FILE* output, directory_t* current_dir, int depth, c
     return 0;
 }
 
-bool construct_file_line(char* buffer, file_t file, const char* path_to_parent_dir){
+bool construct_file_line(FILE* output, file_t file, const char* path_to_parent_dir){
     char lil_buf[200] = {0};
 
-    strcpy(buffer, "1\t"); //e_type
+    fputs("1\t", output); //e_type
 
     strftime(lil_buf, 200, "%Y-%m-%d %H:%M:%S\t", localtime(&file.mod_time));
-    strcat(buffer, lil_buf); //time_t
+    fputs(lil_buf, output); //time_t
 
     sprintf(lil_buf, "%lu\t", file.file_size);
-    strcat(buffer, lil_buf); //size
+    fputs(lil_buf, output); //size
 
     for (size_t n = 0; n < MD5_DIGEST_LENGTH; n++) {
-        sprintf(lil_buf, "%02hhx", file.md5sum[n]);
-        strcat(buffer, lil_buf);
+        fprintf(output, "%02hhx", file.md5sum[n]);
     }
 
-    sprintf(lil_buf, "\t");
-    strcat(buffer, lil_buf); //md5sum
+    fputs("\t", output); //md5sum
 
-    strcat(buffer, path_to_parent_dir); //benigging of path
-    strcat(buffer, "/");
-    strcat(buffer, file.name);
+    fprintf(output, "%s/%s", path_to_parent_dir, file.name); // path
 
-    return 0;
+    return true;
 }
 
-bool construct_dir_line(char* buffer, directory_t dir, const char* path_to_parent_dir){
+bool construct_dir_line(FILE* output, directory_t dir, const char* path_to_parent_dir){
     char lil_buf[200] = {0};
 
-    strcpy(buffer, "0\t"); //e_type
+    fputs("0\t", output); //e_type
 
     strftime(lil_buf, 200, "%Y-%m-%d %H:%M:%S\t", localtime(&dir.mod_time));
-    strcat(buffer, lil_buf); //time_t
+    fputs(lil_buf, output); //time_t
 
-    strcat(buffer, path_to_parent_dir); //begining of path
-    strcat(buffer, "/");
-    strcat(buffer, dir.name);
-    strcat(buffer, "/");
+    fprintf(output, "%s/%s/", path_to_parent_dir, dir.name); // path
 
-    return 0;
+    return true;
 }
 
-bool construct_other_line(char* buffer, file_t file, const char* path_to_parent_dir){
+bool construct_other_line(FILE* output, file_t file, const char* path_to_parent_dir){
     char lil_buf[200] = {0};
 
-    strcpy(buffer, "2\t"); //e_type
+    fputs("2\t", output); //e_type
 
     strftime(lil_buf, 200, "%Y-%m-%d %H:%M:%S\t", localtime(&file.mod_time));
-    strcat(buffer, lil_buf); //time_t
+    fputs(lil_buf, output); //time_t
 
-    strcat(buffer, path_to_parent_dir); //begining of path
-    strcat(buffer, "/");
-    strcat(buffer, file.name);
+    fprintf(output, "%s/%s", path_to_parent_dir, file.name); // path
 
-    return 0;
+    return true;
 }

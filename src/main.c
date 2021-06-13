@@ -5,6 +5,7 @@
 #include <getopt.h>
 #include <string.h>
 
+#include <tree.h>
 #include <scan.h>
 #include <save.h>
 
@@ -48,7 +49,9 @@ int main(int argc, char* argv[]) {
         printf("Start of scanning and saving :\n");
     }
 
-    save_to_file(process_dir(input_path, md5sum, verbose), output_path, 0, input_path, verbose);
+    directory_t* dir = process_dir(input_path, md5sum, verbose);
+    save_to_file(dir, output_path, input_path, verbose);
+    free_dir(dir);
 
     if (verbose) {
         printf("End of scanning and saving.\n");

@@ -46,7 +46,7 @@ START_TEST(test_save_subdirs) {
 
     subdir1.files = &file3;
 
-    save_to_file(&dir1, TEST_DIR "/out/savetest.txt", 0, "dir1", false);
+    save_to_file(&dir1, TEST_DIR "/out/savetest.txt", "dir1", false);
 
     ck_assert(compare_test_file(TEST_DIR "/data/savetest-expected.txt", TEST_DIR "/out/savetest.txt"));
 }
