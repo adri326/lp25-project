@@ -9,10 +9,9 @@
 #include <save.h>
 
 int main(int argc, char* argv[]) {
-    
     //getopt
-    char output_path[200] = "./";
-    char input_path[200] = "result_of_scan.txt";
+    char output_path[200] = "result_of_scan.txt";
+    char input_path[200] = "./";
     bool md5sum = false;
     bool verbose = false;
     int opt = 0;
@@ -27,20 +26,19 @@ int main(int argc, char* argv[]) {
                 /*'s' as md5 Sum*/
                 md5sum = true;
                 break;
-            
+
             case 'o':
-            	/*'o' as in Output*/
-            	strcpy(output_path, optarg);
-            	break;
-            
+                /*'o' as in Output*/
+                strcpy(output_path, optarg);
+                break;
+
             case 'v':
                 /*'v' as in Verbose*/
                 verbose = true;
                 break;
         }
     }
-    
-    
+
     //verbose for getopt
     if (verbose) {
         printf("Getopt options :\n\tinput_path : %s\n", input_path);
@@ -49,17 +47,12 @@ int main(int argc, char* argv[]) {
         printf("\tVerbose : %d\n", verbose);
         printf("Start of scanning and saving :\n");
     }
-    
-    
-    
+
     save_to_file(process_dir(input_path,  md5sum, verbose), output_path, 0, input_path, verbose);
-    
-    
+
     if (verbose) {
         printf("End of scanning and saving.\n");
     }
 
-
-    
     return 0;
 }

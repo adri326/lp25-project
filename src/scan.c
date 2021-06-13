@@ -13,16 +13,15 @@
 #include <md5sum.h>
 
 
-
 directory_t *process_dir(char *path, bool md5sum, bool verbose) {
     directory_t* root = (directory_t*)malloc(sizeof(directory_t));
     root->files = NULL;
     root->subdirs = NULL;
     root->next_dir = NULL;
-  
+
     struct stat stat_buffer;
     stat(path, &stat_buffer);
-  
+
     //mod_time
     root->mod_time = stat_buffer.st_mtime;
 
@@ -30,13 +29,13 @@ directory_t *process_dir(char *path, bool md5sum, bool verbose) {
     char str_buffer[200];
     last_of_split(path, '/', str_buffer);
     strcpy(root->name, str_buffer);
-    
-    
+
     struct dirent* file = NULL;
     DIR* dir = opendir(path);
     if(!dir)
     {
         perror("ERROR");
+        printf("Banana!\n");
         return NULL;
     }
 
@@ -50,14 +49,13 @@ directory_t *process_dir(char *path, bool md5sum, bool verbose) {
             strcat(str_buffer, "/");
             strcat(str_buffer, file->d_name);
             if (verbose) {printf("%s\n", str_buffer);}
-            
+
             append_file(process_file(str_buffer, md5sum), root);
 
             if ((int)file->d_type == 4) {
                 directory_t* newDir = process_dir(str_buffer, md5sum, verbose);
                 append_subdir(newDir,root);
             }
-            
         }
         file = readdir(dir);
     }
@@ -66,12 +64,7 @@ directory_t *process_dir(char *path, bool md5sum, bool verbose) {
         closedir(dir);
     }
     return root;
-
-
 }
-
-
-
 
 file_t *process_file(char *path, bool md5sum) {
     file_t* files = (file_t*)malloc(sizeof(file_t));
@@ -86,40 +79,31 @@ file_t *process_file(char *path, bool md5sum) {
 
     if (S_ISDIR(stat_buffer.st_mode)) {
         files->file_type = DIRECTORY;
-    }
-    else if (S_ISREG(stat_buffer.st_mode)) {
+    } else if (S_ISREG(stat_buffer.st_mode)) {
         files->file_type = REGULAR_FILE;
         if (md5sum) {
             compute_md5(path, files->md5sum);
         }
-    }
-    else {
+    } else {
         files->file_type = OTHER_TYPE;
         if (md5sum) {
             compute_md5(path, files->md5sum);
         }
     }
 
-
     files->file_size = stat_buffer.st_size;
     files->mod_time = stat_buffer.st_mtime;
 
     return files;
-
-
 }
 
-
-
-
 int last_of_split(char *inpt, char split_character, char *outpt) {
-
     int length = strlen(inpt);
     int i = length-1;
     while (i >= 0 && inpt[i] != split_character) {
         i--;
     }
-    
+
     outpt[0] = '\0';
     int head = 0;
     i++;
@@ -129,7 +113,6 @@ int last_of_split(char *inpt, char split_character, char *outpt) {
         head++;
     }
     outpt[head] = '\0';
-
 
     return 0;
 }
