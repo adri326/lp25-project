@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
         printf("Start of scanning and saving :\n");
     }
 
-    save_to_file(process_dir(input_path,  md5sum, verbose), output_path, 0, input_path, verbose);
+    save_to_file(process_dir(input_path, md5sum, verbose), output_path, 0, input_path, verbose);
 
     if (verbose) {
         printf("End of scanning and saving.\n");

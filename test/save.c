@@ -3,42 +3,6 @@
 #include <defs.h>
 #include <save.h>
 
-char* read_test_file(const char* path) {
-    FILE* f = fopen(path, "r");
-    if (!f) return NULL;
-    fseek(f, 0, SEEK_END);
-    size_t length = (size_t)ftell(f);
-
-    char* res = malloc(length + 1);
-    fseek(f, 0, SEEK_SET);
-    if (!fread(res, length, 1, f)) {
-        free(res);
-        return NULL;
-    }
-    res[length] = 0;
-    fclose(f);
-
-    return res;
-}
-
-bool compare_test_file(const char* expected_path, const char* actual_path) {
-    char* expected = read_test_file(expected_path);
-    if (!expected) return false;
-
-    char* actual = read_test_file(actual_path);
-    if (!actual) {
-        free(expected);
-        return false;
-    }
-
-    int res = strcmp(expected, actual);
-
-    free(expected);
-    free(actual);
-
-    return res == 0;
-}
-
 START_TEST(test_save_subdirs) {
     directory_t dir1 = {0};
     strcpy(dir1.name, "dir1");
@@ -82,7 +46,7 @@ START_TEST(test_save_subdirs) {
 
     subdir1.files = &file3;
 
-    save_to_file(&dir1, TEST_DIR "/out/savetest.txt", 0, "dir1");
+    save_to_file(&dir1, TEST_DIR "/out/savetest.txt", 0, "dir1", false);
 
     ck_assert(compare_test_file(TEST_DIR "/data/savetest-expected.txt", TEST_DIR "/out/savetest.txt"));
 }
