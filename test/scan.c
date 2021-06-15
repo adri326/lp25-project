@@ -101,6 +101,26 @@ START_TEST(test_scan_dir_nomd5) {
 }
 END_TEST
 
+START_TEST(test_basename) {
+    ck_assert_str_eq(get_basename("a", '/'), "a");
+    ck_assert_str_eq(get_basename("", '/'), "");
+
+    ck_assert_str_eq(get_basename("/a", '/'), "a");
+    ck_assert_str_eq(get_basename("a/", '/'), "");
+    ck_assert_str_eq(get_basename("a/b", '/'), "b");
+    ck_assert_str_eq(get_basename("/", '/'), "");
+
+    ck_assert_str_eq(get_basename("a/b/c", '/'), "c");
+    ck_assert_str_eq(get_basename("a.b.c", '.'), "c");
+
+    ck_assert_str_eq(get_basename("hello/fellow/humans", '/'), "humans");
+    ck_assert_str_eq(get_basename("not a robot", '/'), "not a robot");
+    ck_assert_str_eq(get_basename("hello/world", '/'), "world");
+    ck_assert_str_eq(get_basename("hello/🦊", '/'), "🦊"); // Fox emoji
+    ck_assert_str_eq(get_basename("🦊/heya", '/'), "heya");
+}
+END_TEST
+
 Suite* scan_suite() {
     Suite* res = suite_create("scan");
 
@@ -109,6 +129,7 @@ Suite* scan_suite() {
     tcase_add_test(tc_basic, test_scan_dir_simple);
     tcase_add_test(tc_basic, test_scan_dir_nomd5);
     tcase_add_test(tc_basic, test_scan_subdir_simple);
+    tcase_add_test(tc_basic, test_basename);
 
     suite_add_tcase(res, tc_basic);
 

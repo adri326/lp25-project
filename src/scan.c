@@ -116,5 +116,5 @@ const char* get_basename(const char* input, char separator) {
         i--;
     }
 
-    return NULL;
+    return input;
 }
