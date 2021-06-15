@@ -38,7 +38,9 @@ bool save_to_file_recursive(FILE* output, directory_t* current_dir, int depth, c
 
     //write the current directory informations
     fputs(tabulations, output);
-    construct_dir_line(output, *current_dir, current_path);
+    if (!construct_dir_line(output, *current_dir, current_path)) {
+        return false;
+    }
     fputs("\n", output);
 
     if (verbose) {
@@ -53,12 +55,16 @@ bool save_to_file_recursive(FILE* output, directory_t* current_dir, int depth, c
     while (current_file != NULL) {
         fputs(tabulations, output);
         if (current_file->file_type == REGULAR_FILE) {
-            construct_file_line(output, *current_file, current_path);
+            if (!construct_file_line(output, *current_file, current_path)) {
+                return false;
+            }
             if (verbose) {
                 printf("F %s%s/%s\n", tabulations, current_path, current_file->name);
             }
         } else {
-            construct_other_line(output, *current_file, current_path);
+            if (!construct_other_line(output, *current_file, current_path)) {
+                return false;
+            }
             if (verbose) {
                 printf("O %s%s/%s\n", tabulations, current_path, current_file->name);
             }
@@ -73,6 +79,10 @@ bool save_to_file_recursive(FILE* output, directory_t* current_dir, int depth, c
     while (subdir != NULL) {
         //call to recurence
         char* new_path = (char*)malloc(strlen(current_path) + strlen(subdir->name) + 2);
+        if (!new_path) {
+            fprintf(stderr, "Couldn't allocate %d bytes of memory!\n", (int)(strlen(current_path) + strlen(subdir->name) + 2));
+            return false;
+        }
         strcpy(new_path, current_path);
         strcat(new_path, "/");
         strcat(new_path, subdir->name);

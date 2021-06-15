@@ -20,6 +20,7 @@ enum ftype {
     OTHER_TYPE
 };
 typedef enum ftype ftype_t;
+#define e_type ftype_t;
 
 struct file {
     ftype_t file_type;
@@ -31,6 +32,7 @@ struct file {
 };
 
 typedef struct file file_t;
+#define s_file file_t;
 
 struct directory {
     char name[NAME_MAX+1];
@@ -41,6 +43,7 @@ struct directory {
 };
 
 typedef struct directory directory_t;
+#define s_directory directory_t;
 
 /**
     Sets `ll` to the last element of the linked list.
