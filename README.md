@@ -16,7 +16,7 @@ Afin d'utiliser l'application, on peut donner les arguments suivants :
 
 ## 3. Tests automatisés
 
-Des tests automatisés se trouvent dans `test/`. Pour les compiler, vous aurez besoin de `cmake` et de la [librairie `check`](https://libcheck.github.io/check/).
+Des tests automatisés se trouvent dans `test/`. Pour les compiler, vous aurez besoin de `cmake`, de `openssl` et de la [librairie `check`](https://libcheck.github.io/check/).
 Ensuite, compilez le programme avec `cmake`:
 
 ```sh
