@@ -12,7 +12,7 @@ Afin d'utiliser l'application, on peut donner les arguments suivants :
 
 - "-i" suivi du dossier à analyser, sinon le dossier actuel sera analysé.
 - "-s" sans argument afin d'activer le calcul des sommes MD5, sinon la somme n'est pas calculé et la valeur sera 0.
-- "-o" suivi d'un fichier dans lequel la sauvegarde de la liste de l'arborescence se fera, sinon la sauvegarde se fera dans "~/.filescanner/yyyy-MM-dd-hh:mm:ss.scan".
+- "-o" suivi d'un fichier dans lequel la sauvegarde de la liste de l'arborescence se fera, sinon la sauvegarde se fera dans ``"~/.filescanner/yyyy-MM-dd-hh:mm:ss.scan".``
 - "-v" pour activer le mode verbose
 
 ## 3. Tests automatisés
