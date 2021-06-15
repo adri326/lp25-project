@@ -121,6 +121,33 @@ START_TEST(test_basename) {
 }
 END_TEST
 
+#define TEN "oooooooooo"
+#define HUNDRED TEN TEN TEN TEN TEN TEN TEN TEN TEN TEN
+#define LONG "l" HUNDRED HUNDRED "ng"
+
+START_TEST(test_scan_long) {
+    directory_t* dir = scan_dir(TEST_DIR "/data/long_names", true, false);
+
+    ck_assert_str_eq(dir->name, "long_names");
+    ck_assert(dir->subdirs != NULL);
+    ck_assert(dir->files == NULL);
+    ck_assert(dir->next_dir == NULL);
+
+    directory_t* subdir = dir->subdirs;
+    ck_assert_str_eq(subdir->name, LONG);
+    ck_assert(subdir->files != NULL);
+    ck_assert(subdir->subdirs == NULL);
+    ck_assert(subdir->next_dir == NULL);
+
+    file_t* file = subdir->files;
+    ck_assert_str_eq(file->name, LONG ".txt");
+    ck_assert_uint_eq(file->file_size, 26);
+    uint8_t* md5_expected = parse_md5sum("663fced65ecd9c2645ca769edb2b146f");
+    ck_assert_msg(buffer_compare(file->md5sum, md5_expected), "loo...oong.txt yielded a different sum!");
+    free(md5_expected);
+}
+END_TEST
+
 Suite* scan_suite() {
     Suite* res = suite_create("scan");
 
@@ -129,6 +156,7 @@ Suite* scan_suite() {
     tcase_add_test(tc_basic, test_scan_dir_simple);
     tcase_add_test(tc_basic, test_scan_dir_nomd5);
     tcase_add_test(tc_basic, test_scan_subdir_simple);
+    tcase_add_test(tc_basic, test_scan_long);
     tcase_add_test(tc_basic, test_basename);
 
     suite_add_tcase(res, tc_basic);

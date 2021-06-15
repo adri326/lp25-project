@@ -68,6 +68,16 @@ START_TEST(test_save_scanned) {
 }
 END_TEST
 
+START_TEST(test_save_long) {
+    directory_t* dir = scan_dir(TEST_DIR "/data/long_names", true, false);
+    ck_assert(save_to_file(dir, TEST_DIR "/out/save_long.txt", "data/long_names", false));
+    FILE* f = fopen(TEST_DIR "/out/save_long.txt", "r");
+    fseek(f, 0, SEEK_END);
+    ck_assert_int_eq(ftell(f), 771); // Test will fail in 8000 years, but this class will be over by then
+    fclose(f);
+    free(dir);
+}
+
 Suite* save_suite() {
     Suite* res = suite_create("save");
 
@@ -75,6 +85,7 @@ Suite* save_suite() {
 
     tcase_add_test(tc_basic, test_save_artificial);
     tcase_add_test(tc_basic, test_save_scanned);
+    tcase_add_test(tc_basic, test_save_long);
 
     suite_add_tcase(res, tc_basic);
 
