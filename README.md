@@ -13,3 +13,21 @@ Afin d'utiliser l'application, on peut donner les arguments suivants :
     - "-s" sans argument afin d'activer le calcul des sommes MD5, sinon la somme n'est pas calculé et la valeur sera 0.
     - "-o" suivi d'un fichier dans lequel la sauvegarde de la liste de l'arborescence se fera, sinon la sauvegarde se fera dans "./result_of_scan.txt".
     - "-v" pour activer le mode verbose
+
+## 3. Tests automatisés
+
+Des tests automatisés se trouvent dans `test/`. Pour les compiler, vous aurez besoin de `cmake` et de la [librairie `check`](https://libcheck.github.io/check/).
+Ensuite, compilez le programme avec `cmake`:
+
+```sh
+# Créer le dossier de sortie:
+mkdir -p build
+cd build
+
+# Compiler le projet et les tests:
+cmake ..
+make
+
+# Lancer les tests:
+./lp25-project-test
+```
