@@ -18,15 +18,16 @@ START_TEST(test_tree_append_file) {
 
     append_file(&a, &dir);
 
-    ck_assert(dir.files != NULL);
-    ck_assert_str_eq(dir.files->name, a.name);
-    ck_assert(dir.files->next_file == NULL);
+    ck_assert(dir.files != NULL); // dir contient au moins un fichier
+    ck_assert_str_eq(dir.files->name, a.name); // ce fichier s'appelle "file a"
+    ck_assert(dir.files->next_file == NULL); // dir contient un seul fichier
 
     append_file(&b, &dir);
-    ck_assert(dir.files != NULL);
-    ck_assert_str_eq(dir.files->name, a.name);
-    ck_assert_str_eq((dir.files->next_file)->name, b.name);
-    ck_assert((dir.files->next_file)->next_file == NULL);
+
+    ck_assert(dir.files != NULL); // dir contient au moins un fichier
+    ck_assert_str_eq(dir.files->name, a.name); // le premier fichier s'appelle "file a"
+    ck_assert_str_eq((dir.files->next_file)->name, b.name); // le deuxième fichier s'appelle "file b"
+    ck_assert((dir.files->next_file)->next_file == NULL); // dir ne contient que deux fichiers
 }
 END_TEST
 

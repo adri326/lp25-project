@@ -86,6 +86,7 @@ int main(int argc, char* argv[]) {
     save_to_file(dir, output_path, input_path, verbose);
     free_dir(dir);
     free(output_path);
+    free(input_path);
 
     if (verbose) {
         printf("End of scanning and saving.\n");

@@ -87,8 +87,10 @@ bool save_to_file_recursive(FILE* output, directory_t* current_dir, int depth, c
         strcat(new_path, "/");
         strcat(new_path, subdir->name);
         if (!save_to_file_recursive(output, subdir, depth+1, new_path, verbose)) {
+            free(new_path);
             return false;
         }
+        free(new_path);
         subdir = subdir->next_dir;
     }
 
